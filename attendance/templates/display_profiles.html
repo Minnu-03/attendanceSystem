@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profiles</title>
+</head>
+<body>
+    <h1>Student Profiles</h1>
+    <table>
+        <tr>
+            <th>Student Name</th>
+            <th>Section</th>
+            <th>Branch</th>
+            <th>Hall Ticket Number</th>
+        </tr>
+        {% for profile in profiles %}
+            <tr>
+                <td>{{ profile.student_name }}</td>
+                <td>{{ profile.section }}</td>
+                <td>{{ profile.branch }}</td>
+                <td>{{ profile.hall_ticket_number }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
