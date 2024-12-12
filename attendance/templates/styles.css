@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600&display=swap');
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7; /* Light background for the page */
+    color: #333; /* Dark text for contrast */
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Header Styles */
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    color: #4caf50; /* Green, for a fresh, positive feel */
+    margin-bottom: 20px;
+}
+
+/* Paragraph */
+p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666; /* Light grey text for subtler tone */
+    margin-bottom: 30px;
+}
+
+/* Button Styles */
+button {
+    background-color: #4caf50; /* Green background */
+    color: white;
+    border: none;
+    border-radius: 30px; /* Rounded corners */
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+/* Links */
+a {
+    text-decoration: none; /* Remove underline from links */
+}
+
+/* Container for Buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form Styles (For future use, such as marking attendance) */
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 400px;
+    width: 100%;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+form button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    background-color: #4caf50;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: none;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .button-container {
+        gap: 10px;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 12px 25px;
+    }
+}
