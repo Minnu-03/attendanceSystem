@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 40px;
+            color: #333;
+        }
+
+        h2, h3 {
+            color: black;
+            text-align: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 20px auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Message -->
+    <h2>Welcome, {{ student.name }}</h2>
+
+    <!-- Attendance Form -->
+    <form id="attendance-form" method="POST" action="{% url 'submit_attendance' %}">
+        {% csrf_token %}
+        <label for="name">Student Name:</label>
+        <input type="text" name="name" id="name" required>
+        <label for="h_t_no">Roll Number:</label>
+        <input type="text" name="h_t_no" id="h_t_no" required>
+        <label for="subject">Subject Code:</label>
+        <input type="text" name="subject" id="subject" required>
+        <button type="submit">Submit Attendance</button>
+    </form>
+    
+
+    <!-- Logout Link -->
+    <a href="{% url 'student_login' %}">Logout</a>
+
+    <script>
+        // Optional: Disable the button after clicking to prevent double submissions
+        document.getElementById('attendance-form').addEventListener('submit', function() {
+            const submitButton = document.getElementById('submit-btn');
+            submitButton.textContent = "Submitting...";
+            submitButton.disabled = true;
+        });
+    </script>
+
+</body>
+</html>
