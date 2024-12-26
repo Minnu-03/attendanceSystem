@@ -13,6 +13,5 @@ How it works:
 
 ![homePage](https://github.com/user-attachments/assets/95a84f8a-dec9-4b7c-812c-50ae48569d6f)
 
-![FaclLogin](https://github.com/user-attachments/assets/20d7f4a6-ac0a-4172-9318-202e6f05f5a4)
 
 ![qrGen](https://github.com/user-attachments/assets/9c9a404f-a1e5-47fe-8b65-4b09e0c8c84a)
