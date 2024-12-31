@@ -15,15 +15,12 @@ from django.contrib.auth.models import User  # Correct import for User model
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 import socket
-from datetime import datetime
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt 
 from .models import StudentProfile
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-from datetime import datetime
 from .models import Attendance
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
@@ -69,56 +66,6 @@ def generate_qr(request):
     return render(request, 'generate_qr_code.html', {'qr_code': qr_code_url})
 
 
-@login_required
-def attendance_form(request):
-    h_t_no = request.session.get('h_t_no')  # Retrieve h_t_no from session
-
-    if not h_t_no:
-        return redirect('student_login')
-
-    try:
-        student = Student.objects.get(h_t_no=h_t_no)
-        print(f"Student found: {student.name}")
-    except Student.DoesNotExist:
-        return redirect('student_login')
-
-    return render(request, 'attendance_form.html', {'student': student})
-
-def mark_attendance(request):
-    if request.method == 'POST':
-        student_name = request.POST.get('name')
-        subject_code = request.POST.get('subject_id')
-        timestamp = request.POST.get('timestamp')
-
-        # Fetch the subject using subject_code
-        try:
-            subject = Subject.objects.get(code=subject_code)
-        except Subject.DoesNotExist:
-            return JsonResponse({'error': 'Invalid subject code'}, status=400)
-
-        # Fetch the student based on the name
-        student = User.objects.filter(username=student_name).first()
-
-        if not student:
-            return JsonResponse({'error': 'Student not found'}, status=404)
-
-        # Capture the student's IP address
-        ip_address = request.META.get('REMOTE_ADDR')
-
-        # Mark attendance as "P" (Present)
-        attendance = Attendance.objects.create(
-            student=student,
-            subject=subject,
-            date=timestamp,  # Use the timestamp from the QR code
-            status="P",  # Mark as "Present"
-            ip_address=ip_address  # Record the student's IP address
-        )
-
-        return JsonResponse({'message': 'Attendance marked successfully'}, status=200)
-
-    return render(request, 'mark_attendance.html')
-
-
 def home(request):
     return render(request, 'home.html')  # Display home page with options
 
@@ -147,9 +94,6 @@ def submit_attendance(request):
         # Handle the POST request here
         pass
 
-# Home page (simple)
-def home(request):
-    return render(request, 'home.html')
 
 def mark_attendance(request):
     if request.method == 'POST':
@@ -240,72 +184,53 @@ def student_login(request):
     # If the method is GET, or if there are errors, render the login form
     return render(request, 'student_login.html')
 
-
 def attendance_form(request):
-    """
-    This view handles the attendance form submission for a logged-in student.
-    It checks if the student is logged in and allows them to submit their attendance.
-    """
-    # Get the student's Hall Ticket Number from the session
-    h_t_no = request.session.get('h_t_no')  # Retrieve h_t_no from session
-
-    if not h_t_no:
-        # If the student is not logged in (session does not have 'h_t_no')
-        return redirect('student_login')  # Redirect to login if student is not logged in
-
-    try:
-        # Get the student object using the hall ticket number
-        student = Student.objects.get(h_t_no=h_t_no)
-        print(f"Student found: {student.name}")
-        print(request.method )
-    except Student.DoesNotExist:
-        # Handle the case if no student is found for the provided hall ticket number
-        print("Student not found.")
-        return redirect('student_login')
-
-    if request.method == 'POST':
-        # Get the values from the form
-        subject_code = request.POST.get('subject')  # Subject
-
-        # Save the attendance in the database
-        attendance = Attendance(
-            student=student,  # Assign the logged-in student
-            roll_number=h_t_no,  # Roll number from the form
-            subject_code=subject_code,  # Subject from the form
-        )
-        attendance.save()  # Save the attendance record to the database
-
-        print(f"Attendance Submitted: {h_t_no}, {subject_code}")
-        
-        # Redirect to the attendance details page after submitting
-        return redirect('attendance_details')
-
-    # Render the attendance form template with the student's data
-    return render(request, 'attendance/attendance_form.html', {'student': student})
+   """
+   This view handles the attendance form submission for a logged-in student.
+   It checks if the student is logged in and allows them to submit their attendance.
+   """
+   # Get the student's Hall Ticket Number from the session
+   h_t_no = request.session.get('h_t_no')  # Retrieve h_t_no from session
 
 
-@login_required
-def student_dashboard(request):
-    # Fetch the student's information from the session or database
-    student = Student.objects.get(user=request.user)  # Assuming a User model is linked to Student
-
-    if request.method == 'POST':
-        # Update details form
-        email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')
-
-        student.email = email
-        student.phone_number = phone_number
-        student.save()
-
-        # Optionally, show a success message
-        return render(request, 'student_dashboard.html', {'student': student, 'success': 'Details updated successfully.'})
-
-    return render(request, 'student_dashboard.html', {'student': student})
+   if not h_t_no:
+       # If the student is not logged in (session does not have 'h_t_no')
+       return redirect('student_login')  # Redirect to login if student is not logged in
 
 
+   try:
+       # Get the student object using the hall ticket number
+       student = Student.objects.get(h_t_no=h_t_no)
+       print(f"Student found: {student.name}")
+       print(request.method )
+   except Student.DoesNotExist:
+       # Handles the case if no student is found for the provided hall ticket number
+       print("Student not found.")
+       return redirect('student_login')
 
-#@login_required
+
+   if request.method == 'POST':
+       # Gets values from the form
+       subject_code = request.POST.get('subject')  # Subject
+
+
+       # Save the attendance in the database
+       attendance = Attendance(
+           student=student,  # Assign the logged-in student
+           roll_number=h_t_no,  # Roll number from the form
+           subject_code=subject_code,  # Subject from the form
+       )
+       attendance.save()  # Saves the attendance record to the database
+
+
+       print(f"Attendance Submitted: {h_t_no}, {subject_code}")
+      
+       return redirect('attendance_details')
+
+
+   return render(request, 'attendance/attendance_form.html', {'student': student})
+
+
 def submit_attendance(request):
     print(f"Request Method: {request.method}")
     print(f"POST Data: {request.POST}")
@@ -359,27 +284,6 @@ def submit_attendance(request):
     # Render the attendance form for GET requests
     return render(request, 'attendance_form.html')
 
-@login_required
-def my_view(request):
-    # Your view logic
-    return render(request, 'my_template.html')
-
-
-def display_student_profiles(request):
-    profiles = StudentProfile.objects.all()
-    return render(request, 'attendance/display_profiles.html', {'profiles': profiles})
-
-def create_student_user(student):
-    # Create a new user, using the student's hall ticket number as the username and generating a password
-    user = User.objects.create_user(username=student.h_t_no, password=student.generate_password())
-    
-    # Use the student's full name as the first name and leave the last name as an empty string
-    user.first_name = student.name  # Set full name as the first name
-    user.last_name = ''  # Leave last name empty
-    user.save()
-    
-    return user
-
 
 def attendance_details(request):
     # Get the logged-in student's attendance details
@@ -414,38 +318,10 @@ def student_dashboard(request):
     return render(request, 'student_dashboard.html', {'student': student})
 
 
-@login_required
-def my_view(request):
-    # Your view logic
-    return render(request, 'my_template.html')
-
-
 def display_student_profiles(request):
     profiles = StudentProfile.objects.all()
     return render(request, 'attendance/display_profiles.html', {'profiles': profiles})
 
-
-def create_student_with_password(h_t_no, student_name):
-    # Use the Hall Ticket Number as the password and hash it
-    hashed_password = make_password(h_t_no)  # The hall ticket number is hashed as the password
-
-    # Create and save the student object
-    student = Student(h_t_no=h_t_no, name=student_name, password=hashed_password)
-    student.save()
-
-    return student
-
-
-def create_student_user(student):
-    # Create a new user, using the student's hall ticket number as the username and generating a password
-    user = User.objects.create_user(username=student.h_t_no, password=student.generate_password())
-    
-    # Use the student's full name as the first name and leave the last name as an empty string
-    user.first_name = student.name  # Set full name as the first name
-    user.last_name = ''  # Leave last name empty
-    user.save()
-    
-    return user
 
 def verify_student_password(h_t_no, password):
     try:
@@ -459,21 +335,6 @@ def verify_student_password(h_t_no, password):
             print("Incorrect password.")
     except Student.DoesNotExist:
         print("Student not found.")
-
-
-def verify_student_password(h_t_no, password):
-    try:
-        # Fetch the student from the database by Hall Ticket Number (h_t_no)
-        student = Student.objects.get(h_t_no=h_t_no)
-
-        # Check if the entered password matches the stored hashed password
-        if check_password(password, student.password):
-            print("Password is correct!")  # Success
-        else:
-            print("Incorrect password.")  # Failure
-    except Student.DoesNotExist:
-        print("Student not found.")  # Error: Student does not exist
-
 
 
 def login_view(request):
@@ -493,42 +354,3 @@ def login_view(request):
     else:
         return render(request, 'login.html', {'error': 'Incorrect password'})
     
-
-def create_student(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        h_t_no = request.POST.get('h_t_no')
-        name = request.POST.get('name')
-        section = request.POST.get('section')
-        branch = request.POST.get('branch')
-
-        # Create the User object
-        user = User.objects.create_user(username=username, password=password)
-
-        # Create the Student object
-        student = Student.objects.create(
-            user=user,
-            h_t_no=h_t_no,
-            name=name,
-            section=section,
-            branch=branch
-        )
-        return redirect('student_profile')  # Redirect to a profile page or wherever needed
-    return render(request, 'create_student.html')
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        # X-Forwarded-For contains a comma-separated list of IPs
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        # If X-Forwarded-For is not present, fallback to REMOTE_ADDR
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-# Sample view using the IP capture function
-def my_view(request):
-    ip = get_client_ip(request)  # Capture the client's real IP
-    return HttpResponse(f"Your IP is {ip}")
